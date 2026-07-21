@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOODIE Launcher Launcher</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #FAFAF7;
+    --panel: #FFFFFF;
+    --ink: #0A0A0A;
+    --text: #14140F;
+    --text-dim: #6B6B65;
+    --hood: #CFEA1E;
+    --hood-shadow: #A9C412;
+    --burn: #FF5A36;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .eyebrow .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--hood);
+    border: 1.5px solid var(--ink);
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+
+  .sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .stat-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .stat {
+    flex: 1;
+    background: var(--panel);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    cursor: pointer;
+    background: var(--panel);
+    color: var(--text-dim);
+  }
+
+  .tab.active {
+    background: var(--hood);
+    color: var(--ink);
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 5px 5px 0 var(--ink);
+    margin-bottom: 20px;
+  }
+
+  .panel.hidden { display: none; }
+
+  .rule-badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: var(--hood);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .field { margin-bottom: 14px; }
+
+  .field-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .field-row input, .field-row select {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .field-row input::placeholder { color: #B8B8AE; }
+  .field-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .two-col { display: flex; gap: 10px; }
+  .two-col .field { flex: 1; }
+
+  button.primary {
+    width: 100%;
+    background: var(--hood);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+
+  button.primary:hover { background: var(--hood-shadow); }
+  button.primary:active { transform: translate(1px, 1px); }
+
+  button.primary:disabled {
+    background: #E8E8E2;
+    color: var(--text-dim);
+    border-color: #C9C9C1;
+    cursor: not-allowed;
+  }
+
+  .status {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 14px;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .status a { color: var(--hood-shadow); font-weight: 700; text-decoration: none; }
+  .status a:hover { text-decoration: underline; }
+  .status.error { color: var(--burn); }
+
+  .launcher-list {
+    margin-top: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    background: var(--bg);
+  }
+
+  .launcher-item {
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-bottom: 1px solid #E0E0D8;
+    cursor: pointer;
+  }
+
+  .launcher-item:last-child { border-bottom: none; }
+  .launcher-item:hover { background: rgba(207, 234, 30, 0.25); }
+  .launcher-item.selected { background: var(--hood); font-weight: 700; }
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  footer a { color: var(--text-dim); }
+  footer a:hover { color: var(--hood-shadow); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="eyebrow"><span class="dot"></span>Robinhood Chain · mainnet</div>
+  <h1>HOODIE Launcher Launcher</h1>
+  <div class="sub">Every launcher this factory creates enforces HOODIE pairing at the contract level. Launch your own launcher, or launch a token through an existing one.</div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-label">Launchers created</div>
+      <div class="stat-value" id="statLaunchers">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Factory</div>
+      <div class="stat-value" id="statFactory" style="font-size:12px;">0xAbC1…6C5</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="create">Create launcher</div>
+    <div class="tab" data-tab="launch">Launch token</div>
+  </div>
+
+  <div class="panel" id="panelCreate">
+    <div class="rule-badge">🔒 HOODIE is baked into every launcher immutably — there is no way to point it at any other token, ever.</div>
+
+    <div class="field">
+      <label class="field-label">Launcher name</label>
+      <div class="field-row"><input type="text" id="launcherName" placeholder="e.g. My Launcher"></div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label class="field-label">Fee (bps, max 1000 = 10%)</label>
+        <div class="field-row"><input type="number" id="feeBps" placeholder="0" value="0"></div>
+      </div>
+      <div class="field">
+        <label class="field-label">LP burn (bps, 10000 = 100%)</label>
+        <div class="field-row"><input type="number" id="lpBurnBps" placeholder="10000" value="10000"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Fee recipient</label>
+      <div class="field-row"><input type="text" id="feeRecipient" placeholder="0x… (defaults to your wallet)"></div>
+      <div class="field-hint">Leave blank to use your connected wallet.</div>
+    </div>
+
+    <button class="primary" id="createBtn">Connect wallet</button>
+    <div class="status" id="createStatus"></div>
+  </div>
+
+  <div class="panel hidden" id="panelLaunch">
+    <div class="rule-badge">🔥 launchToken() atomically deploys your token, seeds the pool, and burns LP in one transaction — no separate steps to trust.</div>
+
+    <div class="field">
+      <label class="field-label">Launcher instance</label>
+      <div class="field-row"><input type="text" id="launcherAddr" placeholder="0x… (pick from list below or paste one)"></div>
+      <div class="launcher-list" id="launcherList"></div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label class="field-label">Token name</label>
+        <div class="field-row"><input type="text" id="tokenName" placeholder="e.g. My Token"></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Symbol</label>
+        <div class="field-row"><input type="text" id="tokenSymbol" placeholder="TKN"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Total supply</label>
+      <div class="field-row"><input type="text" id="tokenSupply" placeholder="1000000"></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">HOODIE to seed the pool</label>
+      <div class="field-row"><input type="text" id="hoodieAmount" placeholder="0.0"></div>
+      <div class="field-hint">balance: <span id="hoodieBal">—</span></div>
+    </div>
+
+    <button class="primary" id="launchBtn">Connect wallet</button>
+    <div class="status" id="launchStatus"></div>
+  </div>
+
+  <footer>
+    <span>launcher-launcher</span>
+    <a href="https://robinhoodchain.blockscout.com/address/0xAbC167cf01Bc5b5ad84817C14aD16D13335876C5" target="_blank" rel="noopener">view factory on explorer →</a>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script>
+  const FACTORY_ADDRESS = "0xAbC167cf01Bc5b5ad84817C14aD16D13335876C5";
+  const HOODIE_ADDRESS  = "0xC72c01AAB5f5678dc1d6f5C6d2B417d91D402Ba3";
+  const CHAIN_ID_HEX    = "0x1237"; // 4663
+
+  const FACTORY_ABI = [
+    "function createLauncher(uint16 feeBps, address feeRecipient, uint16 lpBurnBps, string calldata name) external returns (address launcher)",
+    "function allLaunchersCount() external view returns (uint256)",
+    "function getAllLaunchers() external view returns (address[] memory)",
+    "event LauncherCreated(address indexed launcher, address indexed creator, uint16 feeBps, address feeRecipient, uint16 lpBurnBps, string name)"
+  ];
+
+  const LAUNCHER_ABI = [
+    "function launchToken(string name, string symbol, uint256 totalSupply, uint256 hoodieAmount) external returns (address token, address pair)"
+  ];
+
+  const ERC20_ABI = [
+    "function balanceOf(address) view returns (uint256)",
+    "function approve(address,uint256) returns (bool)",
+    "function allowance(address,address) view returns (uint256)"
+  ];
+
+  let provider, signer, userAddress;
+  const $ = (id) => document.getElementById(id);
+
+  function setStatus(el, msg, isError = false) {
+    el.innerHTML = msg;
+    el.className = "status" + (isError ? " error" : "");
+  }
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      const target = tab.dataset.tab;
+      $("panelCreate").classList.toggle("hidden", target !== "create");
+      $("panelLaunch").classList.toggle("hidden", target !== "launch");
+    });
+  });
+
+  async function connect() {
+    if (!window.ethereum) {
+      alert("No wallet found. Install MetaMask or a compatible wallet.");
+      return false;
+    }
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+
+    const network = await provider.getNetwork();
+    if (network.chainId !== 4663) {
+      try {
+        await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID_HEX }] });
+      } catch (switchErr) {
+        if (switchErr.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: CHAIN_ID_HEX,
+              chainName: "Robinhood Chain",
+              rpcUrls: ["https://rpc.mainnet.chain.robinhood.com"],
+              blockExplorerUrls: ["https://robinhoodchain.blockscout.com"],
+              nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 }
+            }]
+          });
+        } else { throw switchErr; }
+      }
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+    }
+
+    signer = provider.getSigner();
+    userAddress = await signer.getAddress();
+    $("createBtn").textContent = "Create launcher";
+    $("launchBtn").textContent = "Launch token";
+    await refreshStats();
+    return true;
+  }
+
+  async function refreshStats() {
+    try {
+      const factory = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, provider || new ethers.providers.JsonRpcProvider("https://rpc.mainnet.chain.robinhood.com"));
+      const count = await factory.allLaunchersCount();
+      $("statLaunchers").textContent = count.toString();
+
+      const all = await factory.getAllLaunchers();
+      const listEl = $("launcherList");
+      listEl.innerHTML = "";
+      all.slice().reverse().forEach(addr => {
+        const item = document.createElement("div");
+        item.className = "launcher-item";
+        item.textContent = addr;
+        item.addEventListener("click", () => {
+          $("launcherAddr").value = addr;
+          document.querySelectorAll(".launcher-item").forEach(i => i.classList.remove("selected"));
+          item.classList.add("selected");
+        });
+        listEl.appendChild(item);
+      });
+
+      if (userAddress) {
+        const hoodie = new ethers.Contract(HOODIE_ADDRESS, ERC20_ABI, provider);
+        const bal = await hoodie.balanceOf(userAddress);
+        $("hoodieBal").textContent = parseFloat(ethers.utils.formatUnits(bal, 18)).toFixed(4);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  $("createBtn").addEventListener("click", async () => {
+    if (!signer) { await connect(); return; }
+
+    const name = $("launcherName").value.trim();
+    const feeBps = parseInt($("feeBps").value || "0", 10);
+    const lpBurnBps = parseInt($("lpBurnBps").value || "10000", 10);
+    let feeRecipient = $("feeRecipient").value.trim();
+
+    if (!name) { setStatus($("createStatus"), "Give your launcher a name.", true); return; }
+    if (feeBps > 1000) { setStatus($("createStatus"), "Fee can't exceed 1000 bps (10%).", true); return; }
+    if (!feeRecipient) feeRecipient = userAddress;
+    if (!ethers.utils.isAddress(feeRecipient)) { setStatus($("createStatus"), "Fee recipient isn't a valid address.", true); return; }
+
+    try {
+      $("createBtn").disabled = true;
+      setStatus($("createStatus"), "Confirm in wallet…");
+      const factory = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
+      const tx = await factory.createLauncher(feeBps, feeRecipient, lpBurnBps, name);
+      setStatus($("createStatus"), "Waiting for confirmation…");
+      const receipt = await tx.wait();
+
+      const event = receipt.events?.find(e => e.event === "LauncherCreated");
+      const launcherAddr = event?.args?.launcher;
+
+      setStatus(
+        $("createStatus"),
+        `Launcher created: <b>${launcherAddr || "see tx"}</b><br><a href="https://robinhoodchain.blockscout.com/tx/${receipt.transactionHash}" target="_blank" rel="noopener">view tx →</a>`
+      );
+      if (launcherAddr) $("launcherAddr").value = launcherAddr;
+      await refreshStats();
+    } catch (e) {
+      console.error(e);
+      setStatus($("createStatus"), e.reason || e.message || "Failed to create launcher", true);
+    } finally {
+      $("createBtn").disabled = false;
+    }
+  });
+
+  $("launchBtn").addEventListener("click", async () => {
+    if (!signer) { await connect(); return; }
+
+    const launcherAddr = $("launcherAddr").value.trim();
+    const name = $("tokenName").value.trim();
+    const symbol = $("tokenSymbol").value.trim();
+    const supplyStr = $("tokenSupply").value.trim();
+    const hoodieStr = $("hoodieAmount").value.trim();
+
+    if (!ethers.utils.isAddress(launcherAddr)) { setStatus($("launchStatus"), "Pick or paste a valid launcher address.", true); return; }
+    if (!name || !symbol || !supplyStr || !hoodieStr) { setStatus($("launchStatus"), "Fill in all token fields.", true); return; }
+
+    try {
+      $("launchBtn").disabled = true;
+      const supply = ethers.utils.parseUnits(supplyStr, 18);
+      const hoodieAmount = ethers.utils.parseUnits(hoodieStr, 18);
+
+      const hoodie = new ethers.Contract(HOODIE_ADDRESS, ERC20_ABI, signer);
+      const allowance = await hoodie.allowance(userAddress, launcherAddr);
+      if (allowance.lt(hoodieAmount)) {
+        setStatus($("launchStatus"), "Step 1/2 — approving HOODIE…");
+        const approveTx = await hoodie.approve(launcherAddr, hoodieAmount);
+        await approveTx.wait();
+      }
+
+      setStatus($("launchStatus"), "Step 2/2 — launching token…");
+      const launcher = new ethers.Contract(launcherAddr, LAUNCHER_ABI, signer);
+      const tx = await launcher.launchToken(name, symbol, supply, hoodieAmount);
+      const receipt = await tx.wait();
+
+      setStatus(
+        $("launchStatus"),
+        `Launched. <a href="https://robinhoodchain.blockscout.com/tx/${receipt.transactionHash}" target="_blank" rel="noopener">view tx →</a>`
+      );
+      $("tokenName").value = "";
+      $("tokenSymbol").value = "";
+      $("tokenSupply").value = "";
+      $("hoodieAmount").value = "";
+      await refreshStats();
+    } catch (e) {
+      console.error(e);
+      setStatus($("launchStatus"), e.reason || e.message || "Launch failed", true);
+    } finally {
+      $("launchBtn").disabled = false;
+    }
+  });
+
+  window.addEventListener("load", async () => {
+    await refreshStats();
+    if (window.ethereum) {
+      window.ethereum.on?.("accountsChanged", () => connect());
+      window.ethereum.on?.("chainChanged", () => window.location.reload());
+    }
+  });
+</script>
+</body>
+</html>
